@@ -2,6 +2,7 @@
 import { type ClassValue, clsx } from "clsx";
 import qs from "query-string";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -193,3 +194,60 @@ export const getTransactionStatus = (date: Date) => {
 
   return date > twoDaysAgo ? "Processing" : "Success";
 };
+
+export const AuthFormSchema = (type: string) =>
+  z.object({
+    //sign-up
+    firstName:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(4, {
+            message: "First Name should be at least 4 characters.",
+          }),
+    lastName:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(4, {
+            message: "Last Name should be at least 4 characters.",
+          }),
+    address1:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(10, {
+            message: "Address should be at least 10 characters.",
+          }),
+
+    city:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(5, {
+            message: "City should be at least 5 characters.",
+          }),
+    state:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().max(20, {
+            message: "State should be at most 20 characters.",
+          }),
+    postalCode:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(6, {
+            message: "Postal code should be at least 6 characters.",
+          }),
+    dob:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(10, {
+            message: "Date of Birth should be in the correct format.",
+          }),
+    aadhar:
+      type === "sign-in"
+        ? z.string().optional()
+        : z.string().min(12, {
+            message: "Aadhar Number should have 12 digits.",
+          }),
+    //both
+    email: z.string().email(),
+    password: z.string().min(8),
+  });

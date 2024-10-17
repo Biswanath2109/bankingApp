@@ -15,8 +15,9 @@ import Image from "next/image";
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import Footer from "./Footer";
 
-const MobileNav = () => {
+const MobileNav = ({user}: MobileNavProps) => {
   const pathname = usePathname();
   return (
     <section>
@@ -82,6 +83,7 @@ const MobileNav = () => {
               </nav>
             </SheetClose>
           </div>
+          <Footer user={user} />
         </SheetContent>
       </Sheet>
     </section>
