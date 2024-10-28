@@ -67,9 +67,9 @@ export const formatDateTime = (dateString: Date) => {
 };
 
 export function formatAmount(amount: number): string {
-  const formatter = new Intl.NumberFormat("en-IN", {
+  const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "INR",
+    currency: "USD",
     minimumFractionDigits: 2,
   });
 
@@ -195,59 +195,17 @@ export const getTransactionStatus = (date: Date) => {
   return date > twoDaysAgo ? "Processing" : "Success";
 };
 
-export const AuthFormSchema = (type: string) =>
-  z.object({
-    //sign-up
-    firstName:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(4, {
-            message: "First Name should be at least 4 characters.",
-          }),
-    lastName:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(4, {
-            message: "Last Name should be at least 4 characters.",
-          }),
-    address1:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(10, {
-            message: "Address should be at least 10 characters.",
-          }),
-
-    city:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(5, {
-            message: "City should be at least 5 characters.",
-          }),
-    state:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().max(20, {
-            message: "State should be at most 20 characters.",
-          }),
-    postalCode:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(6, {
-            message: "Postal code should be at least 6 characters.",
-          }),
-    dob:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(10, {
-            message: "Date of Birth should be in the correct format.",
-          }),
-    aadhar:
-      type === "sign-in"
-        ? z.string().optional()
-        : z.string().min(12, {
-            message: "Aadhar Number should have 12 digits.",
-          }),
-    //both
-    email: z.string().email(),
-    password: z.string().min(8),
-  });
+export const authFormSchema = (type: string) => z.object({
+  // sign up
+  firstName: type === 'sign-in' ? z.string().optional() : z.string().min(3),
+  lastName: type === 'sign-in' ? z.string().optional() : z.string().min(3),
+  address1: type === 'sign-in' ? z.string().optional() : z.string().max(50),
+  city: type === 'sign-in' ? z.string().optional() : z.string().max(50),
+  state: type === 'sign-in' ? z.string().optional() : z.string().min(2).max(2),
+  postalCode: type === 'sign-in' ? z.string().optional() : z.string().min(3).max(6),
+  dateOfBirth: type === 'sign-in' ? z.string().optional() : z.string().min(3),
+  ssn: type === 'sign-in' ? z.string().optional() : z.string().min(3),
+  // both
+  email: z.string().email(),
+  password: z.string().min(8),
+})

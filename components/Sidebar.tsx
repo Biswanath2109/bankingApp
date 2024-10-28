@@ -31,7 +31,7 @@ const Sidebar = ({ user }: SiderbarProps) => {
           return (
             <Link
               href={item.route}
-              key="item.label"
+              key={item.label}
               className={cn("sidebar-link", { "bg-bank-gradient": isActive })}
             >
               {/* {item.label} */}

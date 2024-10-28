@@ -9,18 +9,18 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 
 import CustomInput from "./CustomInput";
-import { AuthFormSchema } from "@/lib/utils";
+import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getLoggedInUser, signUp } from "@/lib/actions/user.actions";
 import signIn from "@/app/(auth)/sign-in/page";
+import PlaidLink from "./PlaidLink";
 
 const AuthForm = ({ type }: { type: string }) => {
-  
-  const router = useRouter()
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const formSchema = AuthFormSchema(type);
+  const formSchema = authFormSchema(type);
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,17 +35,30 @@ const AuthForm = ({ type }: { type: string }) => {
     setIsLoading(true);
     try {
       if (type === "sign-up") {
-        const newUser = await signUp(data);
+        const userData = {
+          email:  data.email,
+    password:  data.password,
+    firstName:  data.firstName!,
+    lastName:  data.lastName!,
+    address1:  data.address1!,
+    city: data.city!,
+    state:  data.state!,
+    postalCode:  data.postalCode!,
+    dateOfBirth:  data.dateOfBirth!,
+    ssn: data.ssn!,
+        }
+        const newUser = await signUp(userData);
         setUser(newUser);
+        console.log(newUser);
       }
       if (type === "sign-in") {
         const response = signIn({
           email: data.email,
           password: data.password,
-        })
-        if(response){
+        });
+        if (response) {
           console.log(response);
-          router.push('/')
+          router.push("/");
         }
       }
     } catch (error) {
@@ -72,17 +85,20 @@ const AuthForm = ({ type }: { type: string }) => {
         <div className="flex flex-col gap-1 md:gap-3">
           <h1 className="text-24 lg:text-36 font-semibold text-gray-900">
             {user ? "Link Account" : type === "sign-in" ? "Sign-in" : "Sign-up"}
-          </h1>
+          
           <p className="text-16 font-normal text-gray-600">
             {user
               ? "Link your account to get started"
               : "Please Enter your details"}
           </p>
+          </h1>
         </div>
       </header>
-      {user ? (
-        <div className="flex gap-4"></div>
-      ) : (
+      {user ? ( 
+        <div className="flex flex-col gap-4">
+        <PlaidLink user={user} variant="primary" />
+        </div>)
+       : (
         <>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -137,18 +153,18 @@ const AuthForm = ({ type }: { type: string }) => {
                   </div>
                   <div className="flex gap-4">
                     <CustomInput
-                      id="dob"
+                      id="dateOfBirth"
                       control={form.control}
                       placeholder="DD-MM-YYYY"
-                      name="dob"
+                      name="dateOfBirth"
                       label="Date of Birth"
                     />
                     <CustomInput
-                      id="aadhar"
+                      id="ssn"
                       control={form.control}
-                      placeholder="12-digit Aadhar Number"
-                      name="aadhar"
-                      label="Aadhar Number"
+                      placeholder="ssn"
+                      name="ssn"
+                      label="SSN"
                     />
                   </div>
                 </>
@@ -197,7 +213,7 @@ const AuthForm = ({ type }: { type: string }) => {
             </Link>
           </footer>
         </>
-      )}
+      )} 
     </section>
   );
 };
