@@ -37,7 +37,7 @@ export const signIn = async ({ email, password }: signInProps) => {
     const { account } = await createAdminClient();
     const session = await account.createEmailPasswordSession(email, password);
 
-    cookies().set("appwrite-session", session.secret, {
+   (await cookies()).set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -92,7 +92,7 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 
     const session = await account.createEmailPasswordSession(email, password);
 
-    cookies().set("appwrite-session", session.secret, {
+    (await cookies()).set("appwrite-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
@@ -123,7 +123,7 @@ export const logoutAccount = async () => {
   try {
     const { account } = await createSessionClient();
 
-    cookies().delete('appwrite-session');
+    (await cookies()).delete('appwrite-session');
 
     await account.deleteSession('current');
   } catch (error) {
@@ -138,7 +138,7 @@ export const createLinkToken = async (user: User) => {
         client_user_id: user.$id
       },
       client_name: `${user.firstName} ${user.lastName}`,
-      products: ['auth'] as Products[],
+      products: ['auth','transactions','identity'] as Products[],
       language: 'en',
       country_codes: ['US'] as CountryCode[],
     }
@@ -264,16 +264,17 @@ export const getBank = async ({ documentId }: getBankProps) => {
   try {
     const { database } = await createAdminClient();
 
-    const bank = await database.listDocuments(
+    const bank = await database.getDocument(
       DATABASE_ID!,
       BANK_COLLECTION_ID!,
-      [Query.equal('$id', [documentId])]
+      documentId
     )
-
-    return parseStringify(bank.documents[0]);
+    
+    return parseStringify(bank);
   } catch (error) {
     console.log(error)
   }
+
 }
 
 export const getBankByAccountId = async ({ accountId }: getBankByAccountIdProps) => {
